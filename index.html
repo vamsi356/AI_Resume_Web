@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vamsi Garikimukku - Software Developer</title>
+    <!-- Chosen Palette: Calm Harmony (Light Neutrals with Muted Blue-Gray Accent) -->
+    <!-- Application Structure Plan: A single-page, vertically-scrolling portfolio with a smooth-scrolling top navigation bar (Home, Skills, Experience, Education, Certificates). This structure allows for a linear, story-like presentation of the resume, guiding the recruiter from a strong introduction to deep-dives into skills and key projects. It is more engaging than a static document and allows for quick, intuitive access to all key sections via the sticky navigation, which is critical for busy recruiters. The new AI Cover Letter Generator is integrated as a modal, providing an on-demand utility without cluttering the main resume view. -->
+    <!-- Visualization & Content Choices: Resume Info -> Skills -> Goal: Compare/Inform -> Viz: Radar Chart (for a quick visual summary of core competencies) & categorized cards (for detailed breakdown) -> Interaction: Chart hover tooltips -> Justification: A radar chart is far more engaging than a simple list, providing a memorable, high-level overview at a glance, while the detailed cards provide the necessary specifics recruiters need. -> Library: Chart.js. Resume Info -> E-commerce Project -> Goal: Showcase practical application -> Method: A detailed project "feature card" using icons for the tech stack and clear bullet points for features. -> Interaction: Static display for maximum clarity and no-click information access. -> Justification: This is the primary evidence of his skill, so it must be presented clearly and comprehensively without requiring user effort. -> Method: HTML/Tailwind. New Feature -> AI Cover Letter Generator -> Goal: Provide a practical utility for job applications, demonstrating AI integration -> Method: Modal with textarea for job description input, button to trigger LLM call, and display area for generated cover letter. -> Interaction: Button click to open modal, button click to generate, button click to copy. -> Justification: Directly assists the user in a common job application task, adding a "wow" factor by showcasing AI capabilities. -> Library: Gemini API (gemini-2.0-flash) for LLM. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 2px;
+            background: #4f46e5;
+            transition: width .3s;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-xl font-bold text-slate-800">
+                <a href="#home">Vamsi Garikimukku</a>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#skills" class="nav-link text-slate-600 hover:text-indigo-600 font-medium">Skills</a>
+                <a href="#experience" class="nav-link text-slate-600 hover:text-indigo-600 font-medium">Experience</a>
+                <a href="#education" class="nav-link text-slate-600 hover:text-indigo-600 font-medium">Education</a>
+                <a href="#certificates" class="nav-link text-slate-600 hover:text-indigo-600 font-medium">Certificates</a>
+            </div>
+             <a href="mailto:vamsigarikimukku484@gmail.com" class="hidden md:block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Contact Me</a>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-slate-700 focus:outline-none">
+                     <span class="text-3xl">&#9776;</span>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+            <a href="#skills" class="block py-2 text-slate-600 hover:text-indigo-600">Skills</a>
+            <a href="#experience" class="block py-2 text-slate-600 hover:text-indigo-600">Experience</a>
+            <a href="#education" class="block py-2 text-slate-600 hover:text-indigo-600">Education</a>
+            <a href="#certificates" class="block py-2 text-slate-600 hover:text-indigo-600">Certificates</a>
+            <a href="mailto:vamsigarikimukku484@gmail.com" class="block mt-2 text-center bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Contact Me</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="container mx-auto px-6 py-20 md:py-32 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-slate-900 leading-tight">Vamsi Garikimukku</h1>
+            <p class="mt-4 text-xl md:text-2xl text-indigo-600 font-medium">Software Developer</p>
+            <div class="mt-8 max-w-3xl mx-auto text-slate-600 text-lg">
+                <p>
+                    Motivated and detail-oriented developer with a robust foundation in programming, full-stack web development, and problem-solving. Passionate about building efficient, user-friendly applications and eager to contribute to real-world software projects in a dynamic team environment.
+                </p>
+            </div>
+            <div class="mt-10 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <a href="https://github.com/vamsi356" target="_blank" class="text-slate-500 hover:text-indigo-600 transition-colors">
+                    <span class="text-4xl">💻</span>
+                    <span class="sr-only">GitHub</span>
+                </a>
+                <a href="https://www.linkedin.com/in/vamsi-garikimukku-705039287" target="_blank" class="text-slate-500 hover:text-indigo-600 transition-colors">
+                     <span class="text-4xl">🔗</span>
+                    <span class="sr-only">LinkedIn</span>
+                </a>
+                <a href="mailto:vamsigarikimukku484@gmail.com" class="text-slate-500 hover:text-indigo-600 transition-colors">
+                     <span class="text-4xl">✉️</span>
+                    <span class="sr-only">Email</span>
+                </a>
+                <button id="openCoverLetterModal" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors text-lg font-semibold shadow-md">
+                    ✨ Generate Cover Letter
+                </button>
+            </div>
+        </section>
+
+        <section id="skills" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Technical Skills</h2>
+                    <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">A visual overview of my core competencies and a detailed list of the technologies I work with.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-12 items-center">
+                    <div class="md:col-span-2">
+                        <div class="chart-container">
+                            <canvas id="skillsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                            <h3 class="text-xl font-semibold text-slate-800 mb-3">Programming Languages</h3>
+                            <ul class="space-y-2 text-slate-600">
+                                <li>Python</li>
+                                <li>Java</li>
+                                <li>C & C++</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                            <h3 class="text-xl font-semibold text-slate-800 mb-3">Frontend</h3>
+                            <ul class="space-y-2 text-slate-600">
+                                <li>HTML5 & CSS3</li>
+                                <li>JavaScript</li>
+                                <li>Bootstrap</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                            <h3 class="text-xl font-semibold text-slate-800 mb-3">Backend & Databases</h3>
+                            <ul class="space-y-2 text-slate-600">
+                                <li>Flask</li>
+                                <li>MySQL</li>
+                                <li>REST APIs</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                            <h3 class="text-xl font-semibold text-slate-800 mb-3">Tools & Platforms</h3>
+                            <ul class="space-y-2 text-slate-600">
+                                <li>Git & GitHub</li>
+                                <li>VS Code & Vercel</li>
+                                <li>Power BI & Azure</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Experience & Projects</h2>
+                    <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">I believe in learning by doing. Here's a summary of my hands-on training and the key projects I've developed.</p>
+                </div>
+                <div class="max-w-4xl mx-auto space-y-12">
+                    <div class="bg-white p-8 rounded-xl shadow-lg transition-shadow hover:shadow-2xl">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-800">Python Full Stack Developer Trainee</h3>
+                                <p class="text-indigo-600 font-medium">Codegnan IT Solutions Private Limited</p>
+                            </div>
+                            <p class="text-slate-500 font-medium">Jan 2025 – Jul 2025</p>
+                        </div>
+                        <div class="mt-6 border-t pt-6">
+                            <h4 class="text-xl font-semibold text-slate-700 mb-4">Key Project: E-commerce Web Application</h4>
+                            <p class="text-slate-600 mb-6">Developed a comprehensive e-commerce platform from conception to deployment, demonstrating a full range of full-stack capabilities.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <h5 class="font-semibold mb-2 text-slate-700">Technology Stack:</h5>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-slate-200 text-slate-700 px-3 py-1 text-sm rounded-full">HTML</span>
+                                        <span class="bg-slate-200 text-slate-700 px-3 py-1 text-sm rounded-full">CSS</span>
+                                        <span class="bg-slate-200 text-slate-700 px-3 py-1 text-sm rounded-full">JavaScript</span>
+                                        <span class="bg-slate-200 text-slate-700 px-3 py-1 text-sm rounded-full">Bootstrap</span>
+                                        <span class="bg-indigo-200 text-indigo-800 px-3 py-1 text-sm rounded-full font-medium">Python</span>
+                                        <span class="bg-indigo-200 text-indigo-800 px-3 py-1 text-sm rounded-full font-medium">Flask</span>
+                                        <span class="bg-indigo-200 text-indigo-800 px-3 py-1 text-sm rounded-full font-medium">MySQL</span>
+                                        <span class="bg-green-200 text-green-800 px-3 py-1 text-sm rounded-full">PythonAnywhere</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold mb-2 text-slate-700">Core Features Implemented:</h5>
+                                    <ul class="list-disc list-inside text-slate-600 space-y-1">
+                                        <li>Secure Admin & User Authentication</li>
+                                        <li>Dynamic Shopping Cart & Order Management</li>
+                                        <li>Razorpay Payment Gateway Integration</li>
+                                        <li>User Review & Rating System</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-xl shadow-lg transition-shadow hover:shadow-2xl">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-slate-800">Power BI Practitioner</h3>
+                                <p class="text-indigo-600 font-medium">Hands-on Practice</p>
+                            </div>
+                            <p class="text-slate-500 font-medium">Apr 2025 – Present</p>
+                        </div>
+                        <div class="mt-6 border-t pt-6">
+                            <p class="text-slate-600">Gained practical experience in designing and developing interactive business intelligence dashboards. Worked with sample datasets to perform data cleaning, modeling, and visualization, building reports with slicers, charts, and KPIs to represent business metrics effectively.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="education" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Education</h2>
+                    <p class="mt-4 text-lg text-slate-600">My academic background in science and engineering.</p>
+                </div>
+                <div class="max-w-3xl mx-auto">
+                    <div class="relative border-l-2 border-indigo-200 pl-10 space-y-12">
+                         <div class="absolute w-4 h-4 bg-indigo-600 rounded-full -left-2 top-1"></div>
+                        <div>
+                            <p class="text-slate-500">2021 - 2025 (Pursuing)</p>
+                            <h3 class="text-xl font-bold text-slate-800 mt-1">Bachelor of Technology - CSE</h3>
+                            <p class="text-slate-600">Dhanekula Institute of Engineering and Technology</p>
+                            <p class="text-sm text-slate-500 mt-1">CGPA: 7.81</p>
+                        </div>
+                         <div class="absolute w-4 h-4 bg-indigo-600 rounded-full -left-2 top-1/2 -translate-y-1/2 mt-3"></div>
+                        <div>
+                            <p class="text-slate-500">2019 - 2021</p>
+                            <h3 class="text-xl font-bold text-slate-800 mt-1">Intermediate - MPC</h3>
+                            <p class="text-slate-600">Sri Chaitanya Junior College</p>
+                            <p class="text-sm text-slate-500 mt-1">Percentage: 94%</p>
+                        </div>
+                         <div class="absolute w-4 h-4 bg-indigo-600 rounded-full -left-2 bottom-1"></div>
+                        <div>
+                            <p class="text-slate-500">2018 - 2019</p>
+                            <h3 class="text-xl font-bold text-slate-800 mt-1">SSC</h3>
+                            <p class="text-slate-600">Kalanjali High School</p>
+                            <p class="text-sm text-slate-500 mt-1">GPA: 9.7</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="certificates" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Certificates</h2>
+                    <p class="mt-4 text-lg text-slate-600">A collection of my certifications from various platforms.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <h3 class="font-semibold text-slate-800">Web Development</h3>
+                        <p class="text-slate-500 text-sm">Internshala</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <h3 class="font-semibold text-slate-800">Python Full Stack</h3>
+                        <p class="text-slate-500 text-sm">EduSkills Academy</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <h3 class="font-semibold text-slate-800">Python, C++, SQL, Linux</h3>
+                        <p class="text-slate-500 text-sm">IIT Bombay Spoken Tutorial</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <h3 class="font-semibold text-slate-800">Python, Java, ML</h3>
+                        <p class="text-slate-500 text-sm">Infosys Spring Board</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-white py-10">
+        <div class="container mx-auto px-6 text-center">
+             <p>&copy; 2025 Vamsi Garikimukku. All Rights Reserved.</p>
+             <p class="text-slate-400 text-sm mt-2">Built with passion and code.</p>
+        </div>
+    </footer>
+
+    <!-- Cover Letter Modal -->
+    <div id="coverLetterModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeCoverLetterModal">&times;</span>
+            <h2 class="text-2xl font-bold text-slate-900 mb-4">✨ Generate Cover Letter</h2>
+            <p class="text-slate-600 mb-4">Enter a job description below, and I'll generate a personalized cover letter based on Vamsi's resume.</p>
+            <textarea id="jobDescriptionInput" class="w-full p-3 border border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 mb-4 h-32 resize-y" placeholder="Paste the job description here..."></textarea>
+            <button id="generateCoverLetterBtn" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors text-lg font-semibold shadow-md w-full sm:w-auto">
+                Generate
+            </button>
+            <div id="coverLetterLoading" class="hidden mt-4 text-indigo-600 font-medium">Generating...</div>
+            <div id="coverLetterOutput" class="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-md whitespace-pre-wrap text-slate-700 leading-relaxed min-h-[100px]"></div>
+            <button id="copyCoverLetterBtn" class="hidden mt-4 bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                Copy to Clipboard
+            </button>
+            <div id="copyMessage" class="hidden mt-2 text-sm text-green-600">Copied!</div>
+            <div id="errorMessage" class="hidden mt-2 text-sm text-red-600">An error occurred. Please try again.</div>
+        </div>
+    </div>
+
+    <script>
+        const skillsData = {
+            labels: ['Python', 'Frontend', 'Backend', 'Databases', 'DevTools & Platforms'],
+            datasets: [{
+                label: 'Proficiency',
+                data: [9, 8, 8, 7, 8],
+                backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                borderColor: 'rgba(79, 70, 229, 1)',
+                pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
+                borderWidth: 2
+            }]
+        };
+
+        const config = {
+            type: 'radar',
+            data: skillsData,
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        grid: {
+                           color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 14,
+                                family: 'Inter',
+                            },
+                            color: '#1e293b'
+                        },
+                        ticks: {
+                            backdropColor: 'rgba(248, 250, 252, 0)',
+                            color: 'rgba(0,0,0,0.5)',
+                            stepSize: 2,
+                        },
+                        min: 0,
+                        max: 10
+                    }
+                }
+            }
+        };
+
+        window.onload = function() {
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            new Chart(ctx, config);
+        };
+        
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        const navLinks = document.querySelectorAll('nav a[href^="#"], #mobile-menu a[href^="#"]');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                if(this.getAttribute('href') !== '#') {
+                     e.preventDefault();
+                     const targetId = this.getAttribute('href');
+                     const targetElement = document.querySelector(targetId);
+                     if (targetElement) {
+                         targetElement.scrollIntoView({ behavior: 'smooth' });
+                         if(mobileMenu.classList.contains('hidden') === false){
+                             mobileMenu.classList.add('hidden');
+                         }
+                     }
+                }
+            });
+        });
+        
+        const sections = document.querySelectorAll('section');
+        const headerNavLinks = document.querySelectorAll('header nav a');
+        
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.3
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    headerNavLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href').substring(1) === entry.target.id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Gemini API Integration for Cover Letter Generation
+        const openCoverLetterModalBtn = document.getElementById('openCoverLetterModal');
+        const coverLetterModal = document.getElementById('coverLetterModal');
+        const closeCoverLetterModalBtn = document.getElementById('closeCoverLetterModal');
+        const jobDescriptionInput = document.getElementById('jobDescriptionInput');
+        const generateCoverLetterBtn = document.getElementById('generateCoverLetterBtn');
+        const coverLetterLoading = document.getElementById('coverLetterLoading');
+        const coverLetterOutput = document.getElementById('coverLetterOutput');
+        const copyCoverLetterBtn = document.getElementById('copyCoverLetterBtn');
+        const copyMessage = document.getElementById('copyMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        const resumeDetails = {
+            profile: "Motivated and detail-oriented Software Developer with a robust foundation in programming, web development, and problem-solving. Proficient in Python, JavaScript, HTML, CSS, and experienced with frameworks like Flask and tools such as Git and MySQL. A quick learner with strong analytical skills and a passion for building efficient, user-friendly applications. Eager to contribute to real-world software projects and grow as a versatile developer in a dynamic team environment.",
+            skills: {
+                programming: ["Python", "Java", "C", "C++"],
+                frontend: ["HTML5", "CSS3", "JavaScript", "Bootstrap"],
+                backend: ["Flask", "MySQL", "REST APIs"],
+                tools: ["Git & GitHub", "VS Code & Vercel", "Power BI", "Azure"]
+            },
+            experience: [
+                {
+                    title: "Python Full Stack Developer Trainee",
+                    company: "Codegnan IT Solutions Private Limited",
+                    duration: "Jan 2025 – Jul 2025",
+                    description: "Completed an intensive full-stack development program, gaining hands-on experience across frontend and backend technologies.",
+                    project: {
+                        name: "E-commerce Web Application",
+                        techStack: ["HTML", "CSS", "JavaScript", "Bootstrap", "Python", "Flask", "MySQL", "Razorpay", "PythonAnywhere"],
+                        features: ["Secure Admin & User Authentication", "Dynamic Shopping Cart & Order Management", "Razorpay Payment Gateway Integration", "User Review & Rating System"]
+                    }
+                },
+                {
+                    title: "Power BI Practitioner",
+                    company: "Hands-on Practice",
+                    duration: "Apr 2025 – Present",
+                    description: "Gained practical experience in designing and developing interactive business intelligence dashboards. Worked with sample datasets to perform data cleaning, modeling, and visualization, building reports with slicers, charts, and KPIs to represent business metrics effectively."
+                }
+            ],
+            education: [
+                {
+                    degree: "Bachelor of Technology - CSE (pursuing)",
+                    institution: "Dhanekula Institute of Engineering and Technology",
+                    cgpa: "7.81"
+                },
+                {
+                    degree: "Intermediate - MPC",
+                    institution: "Sri Chaitanya Junior College",
+                    percentage: "94%"
+                },
+                {
+                    degree: "SSC",
+                    institution: "Kalanjali High School",
+                    gpa: "9.7"
+                }
+            ],
+            certifications: [
+                "Web Development (Internshala)",
+                "Python Full Stack (EduSkills Academy)",
+                "Python, C++, SQL, Linux (IIT Bombay Spoken Tutorial)",
+                "Python Developer, Java Developer, Machine Learning (Infosys Spring Board)"
+            ]
+        };
+
+        function formatResumeForPrompt(resume) {
+            let formatted = "PROFILE:\n" + resume.profile + "\n\n";
+            formatted += "SKILLS:\n";
+            for (const category in resume.skills) {
+                formatted += `- ${category.charAt(0).toUpperCase() + category.slice(1)}: ${resume.skills[category].join(', ')}\n`;
+            }
+            formatted += "\nEXPERIENCE:\n";
+            resume.experience.forEach(exp => {
+                formatted += `- ${exp.title} at ${exp.company} (${exp.duration})\n`;
+                formatted += `  ${exp.description}\n`;
+                if (exp.project) {
+                    formatted += `  Project: ${exp.project.name}\n`;
+                    formatted += `  Tech Stack: ${exp.project.techStack.join(', ')}\n`;
+                    formatted += `  Features: ${exp.project.features.join('; ')}\n`;
+                }
+                formatted += "\n";
+            });
+            formatted += "EDUCATION:\n";
+            resume.education.forEach(edu => {
+                formatted += `- ${edu.degree} from ${edu.institution}`;
+                if (edu.cgpa) formatted += ` (CGPA: ${edu.cgpa})`;
+                if (edu.percentage) formatted += ` (Percentage: ${edu.percentage})`;
+                if (edu.gpa) formatted += ` (GPA: ${edu.gpa})`;
+                formatted += "\n";
+            });
+            formatted += "\nCERTIFICATIONS:\n";
+            resume.certifications.forEach(cert => {
+                formatted += `- ${cert}\n`;
+            });
+            return formatted;
+        }
+
+        openCoverLetterModalBtn.addEventListener('click', () => {
+            coverLetterModal.style.display = 'flex';
+            coverLetterOutput.textContent = '';
+            copyCoverLetterBtn.classList.add('hidden');
+            copyMessage.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+        });
+
+        closeCoverLetterModalBtn.addEventListener('click', () => {
+            coverLetterModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == coverLetterModal) {
+                coverLetterModal.style.display = 'none';
+            }
+        });
+
+        generateCoverLetterBtn.addEventListener('click', async () => {
+            const jobDescription = jobDescriptionInput.value.trim();
+            if (!jobDescription) {
+                errorMessage.textContent = 'Please enter a job description.';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            coverLetterLoading.classList.remove('hidden');
+            coverLetterOutput.textContent = '';
+            copyCoverLetterBtn.classList.add('hidden');
+            copyMessage.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+
+            const formattedResume = formatResumeForPrompt(resumeDetails);
+            const prompt = `You are an expert career advisor. Based on the following resume content, write a concise and compelling cover letter for the job description provided. Focus on highlighting relevant skills and experiences. Address the letter to "Hiring Manager".
+
+Resume Content:
+${formattedResume}
+
+Job Description:
+${jobDescription}
+
+Cover Letter:`;
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    coverLetterOutput.textContent = text;
+                    copyCoverLetterBtn.classList.remove('hidden');
+                } else {
+                    errorMessage.textContent = 'Failed to generate cover letter. Please try again.';
+                    errorMessage.classList.remove('hidden');
+                    console.error('Unexpected API response structure:', result);
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Error connecting to the API. Please check your network and try again.';
+                errorMessage.classList.remove('hidden');
+                console.error('Fetch error:', error);
+            } finally {
+                coverLetterLoading.classList.add('hidden');
+            }
+        });
+
+        copyCoverLetterBtn.addEventListener('click', () => {
+            const textToCopy = coverLetterOutput.textContent;
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                copyMessage.classList.remove('hidden');
+                setTimeout(() => copyMessage.classList.add('hidden'), 2000);
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                errorMessage.textContent = 'Failed to copy text. Please copy manually.';
+                errorMessage.classList.remove('hidden');
+            }
+            document.body.removeChild(textArea);
+        });
+    </script>
+</body>
+</html>
